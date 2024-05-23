@@ -1,0 +1,23 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_login"
+            android:title="Login"
+            app:actionViewClass="android.widget.Space" />
+        <item
+            android:id="@+id/nav_add_art"
+            android:title="Adicionar Arte"
+            android:visible="true"
+            app:actionViewClass="android.widget.Space" />
+        <item
+            android:id="@+id/nav_add_category"
+            android:title="Adicionar Categoria"
+            android:visible="true"
+            app:actionViewClass="android.widget.Space" />
+    </group>
+</menu>
