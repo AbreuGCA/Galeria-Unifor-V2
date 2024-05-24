@@ -1,8 +1,10 @@
 package com.example.galeriauniforv2
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.util.Base64
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,6 +45,27 @@ class ArtAdapter(private val activity: FragmentActivity) : ListAdapter<ArtItem, 
         // Decode the Base64 string to display the image
         val decodedBytes = Base64.decode(artItem.imageBase64, Base64.DEFAULT)
         holder.artImage.setImageBitmap(BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size))
+
+        // Adicionando o clique para abrir a tela de detalhes
+        holder.itemView.setOnClickListener {
+            val imagePath = saveImageToFile(activity, artItem.imageBase64)
+
+            if (imagePath != null) {
+                val intent = Intent(activity, ArtDetailActivity::class.java).apply {
+                    putExtra("TITLE", artItem.title)
+                    putExtra("ARTIST", artItem.artist)
+                    putExtra("CREATION_DATE", artItem.creationDate)
+                    putExtra("DESCRIPTION", artItem.description)
+                    putExtra("IMAGE_PATH", imagePath)
+                }
+                activity.startActivity(intent)
+            } else {
+                // Lidar com erro ao salvar a imagem
+                Log.e("ArtAdapter", "Failed to save image")
+            }
+        }
+
+
 
         holder.editButton.setOnClickListener {
             showEditDialog(artItem)

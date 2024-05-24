@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(findViewById(R.id.materialToolbar))
 
         drawerLayout = findViewById(R.id.drawerLayout)
-        navigationView = findViewById(R.id.nav_view) // Certifique-se de inicializar navigationView aqui
+        navigationView = findViewById(R.id.nav_view)
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         artAdapter = ArtAdapter(this)
@@ -43,10 +43,11 @@ class MainActivity : AppCompatActivity() {
 
         val aux = bundle?.getInt("autenticado")
 
-        Log.d("contentValues", "valor: $aux")
+        Log.d("MainActivity", "Valor autenticado: $aux")
         if (aux == 1) {
             navigationView.menu.findItem(R.id.nav_add_art).isVisible = true
             navigationView.menu.findItem(R.id.nav_add_category).isVisible = true
+            navigationView.menu.findItem(R.id.nav_login).isVisible = false
         } else {
             navigationView.menu.findItem(R.id.nav_add_art).isVisible = false
             navigationView.menu.findItem(R.id.nav_add_category).isVisible = false

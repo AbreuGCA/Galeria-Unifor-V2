@@ -24,4 +24,5 @@ class UserAuthManager{
                 callback(false, exception.message)
             }
     }
+
 }
