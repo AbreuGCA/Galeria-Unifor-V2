@@ -1,44 +1,51 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:gravity="center">
+    android:padding="16dp">
 
     <EditText
         android:id="@+id/editTextTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Título" />
+        android:hint="Título"/>
 
     <EditText
         android:id="@+id/editTextArtist"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Artista" />
+        android:hint="Artista"/>
 
     <EditText
         android:id="@+id/editTextCreationDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Data de Criação" />
+        android:hint="Data de Criação"/>
 
     <EditText
         android:id="@+id/editTextDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Descrição" />
+        android:hint="Descrição"/>
 
-    <EditText
-        android:id="@+id/editTextBase64"
+    <ImageView
+        android:id="@+id/imageViewArt"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"
+        android:background="#CCCCCC"/>
+
+    <Button
+        android:id="@+id/buttonSelectImage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Base 64" />
+        android:text="Selecionar Imagem"/>
+
     <Button
         android:id="@+id/buttonAddArt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Adicionar Arte" />
+        android:text="Adicionar Arte"/>
 
 </LinearLayout>

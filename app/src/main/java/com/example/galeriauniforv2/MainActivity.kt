@@ -10,14 +10,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 
-class MainActivity : AppCompatActivity()  {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var artAdapter: ArtAdapter
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
     private val db = FirebaseFirestore.getInstance()
+    private var artItemsListener: ListenerRegistration? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,33 +27,41 @@ class MainActivity : AppCompatActivity()  {
         setSupportActionBar(findViewById(R.id.materialToolbar))
 
         drawerLayout = findViewById(R.id.drawerLayout)
+        navigationView = findViewById(R.id.nav_view) // Certifique-se de inicializar navigationView aqui
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         artAdapter = ArtAdapter(this)
         recyclerView.adapter = artAdapter
 
-        fetchArtItems()
-
-        navigationView = findViewById(R.id.nav_view)
         setupNavigationMenu()
     }
 
     override fun onResume() {
         super.onResume()
-        val intent = Intent()
-        val bundle = getIntent().extras
+        val intent = intent
+        val bundle = intent.extras
 
-        var aux = bundle?.getInt("autenticado")
+        val aux = bundle?.getInt("autenticado")
 
-        Log.d("contentValues", "valor: "+aux)
-        if(aux == 1){
+        Log.d("contentValues", "valor: $aux")
+        if (aux == 1) {
             navigationView.menu.findItem(R.id.nav_add_art).isVisible = true
             navigationView.menu.findItem(R.id.nav_add_category).isVisible = true
-        } else{
+        } else {
             navigationView.menu.findItem(R.id.nav_add_art).isVisible = false
             navigationView.menu.findItem(R.id.nav_add_category).isVisible = false
         }
+
+        // Listen for real-time updates
+        startListeningForArtItems()
     }
+
+    override fun onPause() {
+        super.onPause()
+        // Remove the real-time listener
+        artItemsListener?.remove()
+    }
+
     private fun setupNavigationMenu() {
         navigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
@@ -72,28 +82,30 @@ class MainActivity : AppCompatActivity()  {
         }
     }
 
-    private fun fetchArtItems() {
-        db.collection("artworks")
-            .get()
-            .addOnSuccessListener { result ->
-                val artItems = result.map { document ->
-                    ArtItem(
-                        title = document.getString("title") ?: "",
-                        artist = document.getString("artist") ?: "",
-                        creationDate = document.getString("creationDate") ?: "",
-                        description = document.getString("description") ?: "",
-                        imageBase64 = document.getString("imageBase64") ?: ""
-                    )
+    private fun startListeningForArtItems() {
+        artItemsListener = db.collection("artworks")
+            .addSnapshotListener { snapshots, e ->
+                if (e != null) {
+                    Log.w("MainActivity", "Listen failed.", e)
+                    return@addSnapshotListener
                 }
-                artAdapter.submitList(artItems)
-            }
-            .addOnFailureListener { exception ->
-                // Handle the error
+
+                if (snapshots != null) {
+                    val artItems = snapshots.map { document ->
+                        ArtItem(
+                            title = document.getString("title") ?: "",
+                            artist = document.getString("artist") ?: "",
+                            creationDate = document.getString("creationDate") ?: "",
+                            description = document.getString("description") ?: "",
+                            imageBase64 = document.getString("imageBase64") ?: ""
+                        )
+                    }
+                    artAdapter.submitList(artItems)
+                }
             }
     }
 
     private fun isUserLoggedIn(): Boolean {
         return FirebaseAuth.getInstance().currentUser != null
     }
-
 }

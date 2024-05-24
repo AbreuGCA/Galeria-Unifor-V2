@@ -40,6 +40,7 @@ class ArtAdapter(private val activity: FragmentActivity) : ListAdapter<ArtItem, 
         holder.artCreationDate.text = artItem.creationDate
         holder.artDescription.text = artItem.description
 
+        // Decode the Base64 string to display the image
         val decodedBytes = Base64.decode(artItem.imageBase64, Base64.DEFAULT)
         holder.artImage.setImageBitmap(BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size))
 
@@ -64,6 +65,7 @@ class ArtAdapter(private val activity: FragmentActivity) : ListAdapter<ArtItem, 
                         submitList(newList)
                     }
                 } else {
+                    // Handle error (optional)
                 }
             }
         }
@@ -79,6 +81,7 @@ class ArtAdapter(private val activity: FragmentActivity) : ListAdapter<ArtItem, 
                     if (success) {
                         submitList(currentList.filter { it.title != artItem.title })
                     } else {
+                        // Handle error (optional)
                     }
                 }
                 dialog.dismiss()
