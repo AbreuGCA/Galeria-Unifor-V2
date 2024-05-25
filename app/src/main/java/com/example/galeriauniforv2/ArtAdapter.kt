@@ -49,6 +49,7 @@ class ArtAdapter(private val activity: FragmentActivity) : ListAdapter<ArtItem, 
         // Adicionando o clique para abrir a tela de detalhes
         holder.itemView.setOnClickListener {
             val imagePath = saveImageToFile(activity, artItem.imageBase64)
+            val artItem = getItem(position)
 
             if (imagePath != null) {
                 val intent = Intent(activity, ArtDetailActivity::class.java).apply {
@@ -65,7 +66,14 @@ class ArtAdapter(private val activity: FragmentActivity) : ListAdapter<ArtItem, 
             }
         }
 
-
+        // Ajustar a visibilidade dos botões
+        if (artItem.isButtonsVisible) {
+            holder.editButton.visibility = View.VISIBLE
+            holder.removeButton.visibility = View.VISIBLE
+        } else {
+            holder.editButton.visibility = View.GONE
+            holder.removeButton.visibility = View.GONE
+        }
 
         holder.editButton.setOnClickListener {
             showEditDialog(artItem)
@@ -75,6 +83,7 @@ class ArtAdapter(private val activity: FragmentActivity) : ListAdapter<ArtItem, 
             showDeleteConfirmationDialog(artItem)
         }
     }
+
 
     private fun showEditDialog(artItem: ArtItem) {
         val fragmentManager = activity.supportFragmentManager

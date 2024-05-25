@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 
@@ -20,6 +21,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navigationView: NavigationView
     private val db = FirebaseFirestore.getInstance()
     private var artItemsListener: ListenerRegistration? = null
+    private lateinit var categoryAdapter: CategoryAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +36,7 @@ class MainActivity : AppCompatActivity() {
         recyclerView.adapter = artAdapter
 
         setupNavigationMenu()
+        setupCategoryList()
     }
 
     override fun onResume() {
@@ -104,6 +107,51 @@ class MainActivity : AppCompatActivity() {
                     artAdapter.submitList(artItems)
                 }
             }
+    }
+
+    private fun setupCategoryList() {
+        val categoryRecyclerView = findViewById<RecyclerView>(R.id.categoryRecyclerView)
+        categoryRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        categoryAdapter = CategoryAdapter { category -> onCategorySelected(category) }
+        categoryRecyclerView.adapter = categoryAdapter
+
+        // Consultar o Firestore para obter as categorias
+        db.collection("categories")
+            .get()
+            .addOnSuccessListener { result ->
+                val categories = result.documents.map { document ->
+                    document.getString("name") ?: ""
+                }
+                categoryAdapter.submitList(categories)
+            }
+            .addOnFailureListener { exception ->
+                Log.w("MainActivity", "Error getting categories", exception)
+            }
+    }
+
+    private fun onCategorySelected(category: String) {
+        loadArtworks(category)
+    }
+
+    private fun loadArtworks(category: String? = null) {
+        var query = db.collection("artworks")
+        if (category != null) {
+            query = query.whereEqualTo("category", category) as CollectionReference
+        }
+        query.get().addOnSuccessListener { snapshot ->
+            val artItems = snapshot.map { document ->
+                ArtItem(
+                    title = document.getString("title") ?: "",
+                    artist = document.getString("artist") ?: "",
+                    creationDate = document.getString("creationDate") ?: "",
+                    description = document.getString("description") ?: "",
+                    imageBase64 = document.getString("imageBase64") ?: ""
+                )
+            }
+            artAdapter.submitList(artItems)
+        }.addOnFailureListener { e ->
+            Log.w("MainActivity", "Error loading artworks", e)
+        }
     }
 
     private fun isUserLoggedIn(): Boolean {

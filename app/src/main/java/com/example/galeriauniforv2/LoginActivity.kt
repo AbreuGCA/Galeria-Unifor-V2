@@ -38,13 +38,11 @@ class LoginActivity : AppCompatActivity() {
                     if (success) {
                         val intent = Intent(this, MainActivity::class.java)
                         intent.putExtra("autenticado", 1)
-
                         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         startActivity(intent)
                         finish()
                     } else {
                         Toast.makeText(this, message ?: "Falha na autenticação", Toast.LENGTH_SHORT).show()
-                        // Intention was to pass the authentication status on failure as well
                         val intent = Intent(this, MainActivity::class.java)
                         intent.putExtra("autenticado", 0)
                         startActivity(intent)

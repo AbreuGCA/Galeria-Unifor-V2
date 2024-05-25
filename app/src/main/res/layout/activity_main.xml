@@ -24,6 +24,12 @@
             app:titleCentered="true" />
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/categoryRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -36,4 +42,5 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:menu="@menu/navbar_guest" />
+
 </androidx.drawerlayout.widget.DrawerLayout>

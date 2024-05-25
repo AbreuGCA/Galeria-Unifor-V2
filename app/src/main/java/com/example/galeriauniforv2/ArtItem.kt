@@ -6,4 +6,6 @@ data class ArtItem(
     val creationDate: String = "",
     val description: String = "",
     val imageBase64: String = ""
-)
+) {
+    var isButtonsVisible: Boolean = false
+}
