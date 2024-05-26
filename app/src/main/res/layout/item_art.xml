@@ -46,11 +46,11 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/removeButton"
-                android:layout_width="60dp"
+                android:id="@+id/delete_button"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:enabled="true"
-                android:visibility="visible"
+                android:text="Delete"
+                android:visibility="gone"
                 app:icon="@drawable/delete_forever_24dp_fill0_wght400_grad0_opsz24" />
 
             <Space
@@ -59,14 +59,12 @@
                 android:layout_weight="1" />
 
             <Button
-                android:id="@+id/editButton"
-                android:layout_width="60dp"
+                android:id="@+id/edit_button"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:enabled="true"
-                android:gravity="center"
-                android:visibility="visible"
-                app:icon="@drawable/edit"
-                app:iconGravity="start" />
+                android:text="Edit"
+                android:visibility="gone"
+                app:icon="@drawable/edit" />
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>

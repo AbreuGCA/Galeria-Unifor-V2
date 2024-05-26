@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         navigationView = findViewById(R.id.nav_view)
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        artAdapter = ArtAdapter(this)
+        artAdapter = ArtAdapter(this, isUserAuthenticated = isUserLoggedIn())
         recyclerView.adapter = artAdapter
 
         setupNavigationMenu()
@@ -51,9 +51,11 @@ class MainActivity : AppCompatActivity() {
             navigationView.menu.findItem(R.id.nav_add_art).isVisible = true
             navigationView.menu.findItem(R.id.nav_add_category).isVisible = true
             navigationView.menu.findItem(R.id.nav_login).isVisible = false
+            artAdapter.setUserAuthenticated(true) // Atualiza a visibilidade dos botões
         } else {
             navigationView.menu.findItem(R.id.nav_add_art).isVisible = false
             navigationView.menu.findItem(R.id.nav_add_category).isVisible = false
+            artAdapter.setUserAuthenticated(false) // Atualiza a visibilidade dos botões
         }
 
         // Listen for real-time updates

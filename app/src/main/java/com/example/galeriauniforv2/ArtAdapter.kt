@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
-class ArtAdapter(private val activity: FragmentActivity) : ListAdapter<ArtItem, ArtAdapter.ArtViewHolder>(ArtDiffCallback()) {
+class ArtAdapter(private val activity: FragmentActivity, private var isUserAuthenticated: Boolean) : ListAdapter<ArtItem, ArtAdapter.ArtViewHolder>(ArtDiffCallback()) {
 
     private val artManager = ArtManager()
 
@@ -26,8 +26,8 @@ class ArtAdapter(private val activity: FragmentActivity) : ListAdapter<ArtItem, 
         val artCreationDate: TextView = itemView.findViewById(R.id.artCreationDate)
         val artImage: ImageView = itemView.findViewById(R.id.artImage)
         val artDescription: TextView = itemView.findViewById(R.id.artDescription)
-        val editButton: Button = itemView.findViewById(R.id.editButton)
-        val removeButton: Button = itemView.findViewById(R.id.removeButton)
+        val editButton: Button = itemView.findViewById(R.id.edit_button)
+        val removeButton: Button = itemView.findViewById(R.id.delete_button)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArtViewHolder {
@@ -46,10 +46,26 @@ class ArtAdapter(private val activity: FragmentActivity) : ListAdapter<ArtItem, 
         val decodedBytes = Base64.decode(artItem.imageBase64, Base64.DEFAULT)
         holder.artImage.setImageBitmap(BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size))
 
-        // Adicionando o clique para abrir a tela de detalhes
-        holder.itemView.setOnClickListener {
+        // Ajustar a visibilidade dos botões
+        if (isUserAuthenticated) {
+            holder.editButton.visibility = View.VISIBLE
+            holder.removeButton.visibility = View.VISIBLE
+        } else {
+            holder.editButton.visibility = View.GONE
+            holder.removeButton.visibility = View.GONE
+        }
+
+        holder.editButton.setOnClickListener {
+            showEditDialog(artItem)
+        }
+
+        holder.removeButton.setOnClickListener {
+            showDeleteConfirmationDialog(artItem)
+        }
+
+        // Adicionar o clique na imagem para abrir a ArtDetailActivity
+        holder.artImage.setOnClickListener {
             val imagePath = saveImageToFile(activity, artItem.imageBase64)
-            val artItem = getItem(position)
 
             if (imagePath != null) {
                 val intent = Intent(activity, ArtDetailActivity::class.java).apply {
@@ -65,25 +81,12 @@ class ArtAdapter(private val activity: FragmentActivity) : ListAdapter<ArtItem, 
                 Log.e("ArtAdapter", "Failed to save image")
             }
         }
-
-        // Ajustar a visibilidade dos botões
-        if (artItem.isButtonsVisible) {
-            holder.editButton.visibility = View.VISIBLE
-            holder.removeButton.visibility = View.VISIBLE
-        } else {
-            holder.editButton.visibility = View.GONE
-            holder.removeButton.visibility = View.GONE
-        }
-
-        holder.editButton.setOnClickListener {
-            showEditDialog(artItem)
-        }
-
-        holder.removeButton.setOnClickListener {
-            showDeleteConfirmationDialog(artItem)
-        }
     }
 
+    fun setUserAuthenticated(authenticated: Boolean) {
+        isUserAuthenticated = authenticated
+        notifyDataSetChanged()  // Atualiza a lista para refletir a nova visibilidade dos botões
+    }
 
     private fun showEditDialog(artItem: ArtItem) {
         val fragmentManager = activity.supportFragmentManager
