@@ -1,8 +1,10 @@
 package com.example.galeriauniforv2
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,6 +14,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.Query
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,12 +31,18 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.materialToolbar))
 
+        val resetButton = findViewById<Button>(R.id.resetButton)
+
         drawerLayout = findViewById(R.id.drawerLayout)
         navigationView = findViewById(R.id.nav_view)
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         artAdapter = ArtAdapter(this, isUserAuthenticated = isUserLoggedIn())
         recyclerView.adapter = artAdapter
+
+        resetButton.setOnClickListener {
+            loadArtworks()
+        }
 
         setupNavigationMenu()
         setupCategoryList()
@@ -58,6 +67,8 @@ class MainActivity : AppCompatActivity() {
             artAdapter.setUserAuthenticated(false) // Atualiza a visibilidade dos botões
         }
 
+        loadCategories()
+
         // Listen for real-time updates
         startListeningForArtItems()
     }
@@ -76,8 +87,8 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_add_category -> {
-                    menuItem.isVisible = false
-                    false
+                    startActivity(Intent(this, AddCategoryActivity::class.java))
+                    true
                 }
                 R.id.nav_login -> {
                     startActivity(Intent(this, LoginActivity::class.java))
@@ -117,7 +128,10 @@ class MainActivity : AppCompatActivity() {
         categoryAdapter = CategoryAdapter { category -> onCategorySelected(category) }
         categoryRecyclerView.adapter = categoryAdapter
 
-        // Consultar o Firestore para obter as categorias
+        loadCategories()
+    }
+
+    private fun loadCategories() {
         db.collection("categories")
             .get()
             .addOnSuccessListener { result ->
@@ -136,12 +150,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadArtworks(category: String? = null) {
-        var query = db.collection("artworks")
-        if (category != null) {
-            query = query.whereEqualTo("category", category) as CollectionReference
+        val collectionReference = db.collection("artworks")
+        var query: Query = collectionReference
+
+        // Se a categoria não for nula, adicionamos a cláusula de filtro
+        category?.let {
+            query = collectionReference.whereEqualTo("category", it)
         }
+
+        // Executar a consulta
         query.get().addOnSuccessListener { snapshot ->
-            val artItems = snapshot.map { document ->
+            val artItems = snapshot.documents.map { document ->
                 ArtItem(
                     title = document.getString("title") ?: "",
                     artist = document.getString("artist") ?: "",
@@ -159,4 +178,11 @@ class MainActivity : AppCompatActivity() {
     private fun isUserLoggedIn(): Boolean {
         return FirebaseAuth.getInstance().currentUser != null
     }
+
+    companion object {
+        fun newIntent(context: Context): Intent {
+            return Intent(context, MainActivity::class.java)
+        }
+    }
+
 }

@@ -6,9 +6,11 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Base64
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -30,25 +32,49 @@ class add_art : AppCompatActivity() {
 
         val buttonSelectImage = findViewById<Button>(R.id.buttonSelectImage)
         val buttonAddArt = findViewById<Button>(R.id.buttonAddArt)
+        val spinnerCategory = findViewById<Spinner>(R.id.spinnerCategory)
 
         buttonSelectImage.setOnClickListener {
             selectImageFromGallery()
         }
 
+        loadCategories()
+
         buttonAddArt.setOnClickListener {
             val title = findViewById<EditText>(R.id.editTextTitle).text.toString()
             val artist = findViewById<EditText>(R.id.editTextArtist).text.toString()
+            val selectedCategory = spinnerCategory.selectedItem.toString()
             val creationDate = findViewById<EditText>(R.id.editTextCreationDate).text.toString()
             val description = findViewById<EditText>(R.id.editTextDescription).text.toString()
 
             if (title.isNotEmpty() && artist.isNotEmpty() && creationDate.isNotEmpty() && description.isNotEmpty() && imageBase64 != null) {
-                val newArtItem = ArtItem(title, artist, creationDate, description, imageBase64!!)
+                val newArtItem = ArtItem(title, artist, selectedCategory, creationDate, description, imageBase64!!)
 
                 addArtToFirestore(newArtItem)
             } else {
                 Toast.makeText(this, "Por favor, preencha todos os campos e selecione uma imagem", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+
+    private fun loadCategories() {
+        db.collection("categories")
+            .get()
+            .addOnSuccessListener { result ->
+                val categories = mutableListOf<String>()
+                for (document in result) {
+                    val category = document.data["name"] as String
+                    categories.add(category)
+                }
+                val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories)
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                val spinnerCategory = findViewById<Spinner>(R.id.spinnerCategory)
+                spinnerCategory.adapter = adapter
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Erro ao carregar categorias: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
     }
 
     private val selectImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->

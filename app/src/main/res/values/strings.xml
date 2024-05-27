@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Galeria Unifor V2</string>
+    <string name="category_prompt">Choose a category</string>
 </resources>

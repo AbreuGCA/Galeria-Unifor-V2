@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_add_art"
+        android:icon="@drawable/ic_add"
+        android:title="Adicionar Obra"
+        android:visible="false"/>
+    <item
+        android:id="@+id/nav_add_category"
+        android:icon="@drawable/ic_add"
+        android:title="Adicionar Categoria"
+        android:visible="false" />
+    <item
+        android:id="@+id/nav_login"
+        android:icon="@drawable/ic_login"
+        android:title="Login"/>
+</menu>

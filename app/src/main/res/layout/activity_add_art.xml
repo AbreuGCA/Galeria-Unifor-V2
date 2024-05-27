@@ -17,6 +17,14 @@
         android:layout_height="wrap_content"
         android:hint="Artista"/>
 
+    <Spinner
+        android:id="@+id/spinnerCategory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp" />
+
+
     <EditText
         android:id="@+id/editTextCreationDate"
         android:layout_width="match_parent"

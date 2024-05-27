@@ -19,11 +19,8 @@ class ArtDetailActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_art_detail)
 
-
-        // Inicializar TextToSpeech
         textToSpeech = TextToSpeech(this, this)
 
-        // Configurar OnClickListener para o botão de falar
         findViewById<Button>(R.id.buttonSpeak).setOnClickListener {
             speakDescription()
         }
@@ -50,7 +47,6 @@ class ArtDetailActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
     override fun onDestroy() {
         super.onDestroy()
-        // Liberar recursos do TextToSpeech
         textToSpeech.stop()
         textToSpeech.shutdown()
     }
